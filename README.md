@@ -4,7 +4,7 @@ A simple algorithm for finding fair teams. Initially made for Minecraft Hungerga
 
 # Usage
 
-A GUI is pending but in the meantime just add players to the static PLAYER array, set the preferred TEAMSIZE and run the application.
+A GUI is pending but in the meantime just add players with their skill rating (range 1-5 recommended) to the static PLAYER array, set the preferred TEAMSIZE and run the application.
 Teams might be more unbalanced if the amount of players cannot be split up equally.
 
 # TODO
