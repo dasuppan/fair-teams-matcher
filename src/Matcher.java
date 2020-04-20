@@ -1,39 +1,74 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Matcher {
-    public static void main(String[] args) {
-        // experience should be treated similar to a star rating (range 1-5)
-        PLAYERS.add(new Player("Aaron", 5));
-        PLAYERS.add(new Player("Bene", 4));
-        PLAYERS.add(new Player("Anoki", 3));
-        PLAYERS.add(new Player("David", 3));
-        PLAYERS.add(new Player("Erik", 1));
-        PLAYERS.add(new Player("Paul", 5));
-        PLAYERS.add(new Player("Jan", 5));
-        PLAYERS.add(new Player("Natalie", 1));
-        PLAYERS.add(new Player("Fiona", 2));
-        PLAYERS.add(new Player("Filip", 3));
-        PLAYERS.add(new Player("Bennett", 3));
-        PLAYERS.add(new Player("Laurenz", 3));
 
-        double averageExperience = Math.floor(getAvgXP(PLAYERS));
-        System.out.println("Average Experience of Players: " + averageExperience);
-        System.out.println("Number of players: " + PLAYERS.size());
-        if (PLAYERS.size() % TEAMSIZE != 0) {
-            System.out.println("Players cannot be divided equally because of given team-size, teams might be more unbalanced...");
+    public static void main(String[] args) {
+
+        // Set teamSize
+        try {
+            TEAMSIZE = Integer.parseInt(args[1]);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("No teamSize was given");
+            System.exit(1);
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+            System.exit(1);
         }
-        System.out.println("Generating " + (int) Math.ceil((double) PLAYERS.size() / TEAMSIZE) + " teams of size " + TEAMSIZE + ((PLAYERS.size() % TEAMSIZE != 0) ? " (or less)" : ""));
-        ArrayList<Player> result = teamMatch(PLAYERS, TEAMSIZE);
-        ArrayList<ArrayList<Player>> teams = parseTeams(result, TEAMSIZE);
-        printTeams(teams);
+
+        // Fetch players
+        try {
+            fetchPlayersFromFile(args[0]);
+        } catch (IndexOutOfBoundsException e) {
+            // TODO: Print usage
+            System.out.println("No playerFile was given");
+            System.exit(1);
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+            System.exit(1);
+        }
+
+        try {
+            if (args[2].equals("strict")) {
+                System.out.println("Strict enabled");
+                MISMATCH_TOLERANCE *= 5;
+                System.out.println(MISMATCH_TOLERANCE);
+            }
+        } catch (Exception ignored) {};
+
+        try {
+            System.out.println("\nNumber of players: " + PLAYERS.size());
+            System.out.println("Average Experience of Players: " + getAvgXP(PLAYERS));
+            System.out.println("Teamsize: " + TEAMSIZE);
+            if (PLAYERS.size() % TEAMSIZE != 0) System.out.println("Players cannot be divided equally because of given team-size, teams might be more unbalanced...");
+
+            System.out.println("\nGenerating " + (int) Math.ceil((double) PLAYERS.size() / TEAMSIZE) + " teams of size " + TEAMSIZE + ((PLAYERS.size() % TEAMSIZE != 0) ? " (or less)" : ""));
+            ArrayList<Player> result = teamMatch(PLAYERS, TEAMSIZE);
+            ArrayList<ArrayList<Player>> teams = parseTeams(result, TEAMSIZE);
+            printTeams(teams);
+
+            System.out.println("\nHave fun!");
+        } catch (IndexOutOfBoundsException e) {
+            // TODO: Print usage
+            System.out.println("No teamSize was given");
+            System.exit(1);
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
+            System.exit(1);
+        }
+
+        System.exit(0);
     }
 
     public static ArrayList<Player> PLAYERS = new ArrayList<>();
     public static int TEAMSIZE = 2;
 
     // A higher number tends to be accompanied by higher matching accuracy but less variety and a longer runtime
-    public static int MISMATCH_TOLERANCE = 40;
+    public static int MISMATCH_TOLERANCE = 10;
 
     /**
      * Recursive algorithm for matching teams based on skill
@@ -45,7 +80,7 @@ public class Matcher {
         if (teamSize < 2) throw new IllegalArgumentException("TeamSize must at least be 2");
         if (players.isEmpty()) return new ArrayList<>();
 
-        double avgBound = 1;
+        double avgBound = 0.5;
         int misMatches = 0;
         boolean teamAccepted = false;
         ArrayList<Player> team = new ArrayList<>();
@@ -135,5 +170,27 @@ public class Matcher {
             enumerator+=player.getXp();
         }
         return (double) enumerator / denumerator;
+    }
+
+    private static void fetchPlayersFromFile(String fileName) {
+        try {
+            File file = new File(java.lang.String.valueOf(fileName));
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            java.lang.String line;
+            try {
+                while ((line = bufferedReader.readLine()) != null) {
+                    String[] playerData = line.split(" ");
+                    PLAYERS.add(new Player(playerData[0], Integer.parseInt(playerData[1])));
+                }
+                fileReader.close();
+            } catch (Exception e) {
+                System.out.println("Could not fetch players: " + e.getMessage());
+                System.exit(1);
+            }
+        } catch (IOException e) {
+            System.out.println("Could not open file " + fileName + ": " + e.getMessage());
+            System.exit(1);
+        }
     }
 }
