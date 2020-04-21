@@ -7,6 +7,11 @@ import java.util.Random;
 
 public class Matcher {
 
+    public static ArrayList<Player> PLAYERS = new ArrayList<>();
+    public static int TEAMSIZE = 2;
+    // A higher number tends to be accompanied by higher matching accuracy but less variety and a longer runtime
+    public static int MISMATCH_TOLERANCE = 10;
+
     public static void main(String[] args) {
 
         // Set teamSize
@@ -32,19 +37,23 @@ public class Matcher {
             System.exit(1);
         }
 
-        try {
-            if (args[2].equals("strict")) {
-                System.out.println("Strict enabled");
-                MISMATCH_TOLERANCE *= 5;
-                System.out.println(MISMATCH_TOLERANCE);
-            }
-        } catch (Exception ignored) {};
+
 
         try {
-            System.out.println("\nNumber of players: " + PLAYERS.size());
+            System.out.println();
+            // Check for strict
+            try {
+                if (args[2].equals("strict")) {
+                    System.out.println("Strict mode enabled");
+                    MISMATCH_TOLERANCE *= 5;
+                }
+            } catch (Exception ignored) {}
+            System.out.println("Number of players: " + PLAYERS.size());
             System.out.println("Average Experience of Players: " + getAvgXP(PLAYERS));
             System.out.println("Teamsize: " + TEAMSIZE);
             if (PLAYERS.size() % TEAMSIZE != 0) System.out.println("Players cannot be divided equally because of given team-size, teams might be more unbalanced...");
+
+
 
             System.out.println("\nGenerating " + (int) Math.ceil((double) PLAYERS.size() / TEAMSIZE) + " teams of size " + TEAMSIZE + ((PLAYERS.size() % TEAMSIZE != 0) ? " (or less)" : ""));
             ArrayList<Player> result = teamMatch(PLAYERS, TEAMSIZE);
@@ -64,11 +73,7 @@ public class Matcher {
         System.exit(0);
     }
 
-    public static ArrayList<Player> PLAYERS = new ArrayList<>();
-    public static int TEAMSIZE = 2;
 
-    // A higher number tends to be accompanied by higher matching accuracy but less variety and a longer runtime
-    public static int MISMATCH_TOLERANCE = 10;
 
     /**
      * Recursive algorithm for matching teams based on skill
