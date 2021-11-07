@@ -13,4 +13,3 @@ A small program for matching teams based on players skill. The problem of partit
 - the number of teams you want to generate.
 
 2. Have fun!
-3. 
