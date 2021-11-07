@@ -1,32 +1,16 @@
+
 # Fair Teams Matcher
 
-A command line application for finding fair random teams based on players experience. It uses a simple recursive approximation algorithm. This application was initially made for Minecraft Hungergames but can be used for any team-based game/sport/etc.
+A small program for matching teams based on players skill. The problem of partitioning players into k teams while keeping the skill evenly distributed is a NP-complete problem and is also known as the [Partition problem](https://en.wikipedia.org/wiki/Partition_problem). This program implements the Karmarkar-Karp algorithm which utilizes the [Largest differencing method](https://en.wikipedia.org/wiki/Largest_differencing_method) and approximates good results. A nice read that helped me understand it was [this PDF](http://bit-player.org/wp-content/extras/bph-publications/AmSci-2002-03-Hayes-NPP.pdf). The teams are partly-randomized if some players have an equal skill score otherwise this algorithm does not do any randomization. This application was initially made for Minecraft Hungergames but can be used for any team-based game/sport/etc.
 
 # Usage
 
-1. Compile the Java-File `Matcher.java` in the `src` folder with the following command
-    ```
-    javac Matcher.java
-    ```
+0. Create a file which contains players, one player for one line, in the format of NAME,SKILLLEVEL as seen in the file `res/players.csv`. It does not necessarily need to be a `.csv` although I found it to be easy to work with.
 
-2. Create the file containing players following the pattern `PLAYERNAME XP`. Players are separated using newline. XP should hereby represent the players experience in relation to the other players. It can be seen as a "star-rating" meaning a value of 1 would be fitting for a bloody beginner and 5 for a highly experienced player.
-See the file `src/example.txt` as an example.
+1. Compile the Kotlin-File `Main.kt` and run it with two arguments, namely
 
-3. Decide on the preferred size of the teams. Naturally, teams with equal amount of members are likely to be more balanced. 
+- the file path of the created .csv-file and 
+- the number of teams you want to generate.
 
-4. Decide if you either want
-    - more randomness and less balancing (*non-strict*) or
-    - less randomness and more balanced teams (*strict*).
-
-    Depending on your choice write `strict` at the end of the command to enable strict-mode.
-
-5. Run the matcher with the following command
-    ```
-    java Matcher path-to-playerfile teamsize [strict]
-    ```
-
-6. Voila, you got your teams. If you are not happy with the teams either run the matcher again or play with the *strict* flag if you want to tweak the outcome. Have fun!
-
-# Contributing
-
-If you have ideas on how to improve this application feel free to open an Issue or create a pull request!
+2. Have fun!
+3. 
